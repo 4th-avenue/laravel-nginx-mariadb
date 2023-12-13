@@ -1,5 +1,8 @@
 version: '3.8'
 
+volumes:
+  db-data:
+
 services:
   # php Service
   app:
@@ -8,6 +11,13 @@ services:
       dockerfile: ./docker/php/Dockerfile
     volumes:
       - ./src/:/var/www/html
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=${DB_NAME}
+      - DB_USERNAME=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
 
   # NGiNX Service
   web:
@@ -20,3 +30,19 @@ services:
       - app
     volumes:
       - ./src/:/var/www/html
+
+  # MariaDB Service
+  db:
+    build:
+      context: .
+      dockerfile: ./docker/mariadb/Dockerfile
+    ports:
+      - ${DB_PORT}:3306
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      TZ: 'Asia/Seoul'
+    volumes:
+      - ./db-data:/var/lib/mysql
