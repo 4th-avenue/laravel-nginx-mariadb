@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  # php Service
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/php/Dockerfile
+    volumes:
+      - ./src/:/var/www/html
